@@ -1,0 +1,5 @@
+{
+    "editor.formatOnSave": true,
+    "rust-analyzer.hover.actions.implementations.enable": false,
+    "rust-analyzer.lens.implementations.enable": false
+}
