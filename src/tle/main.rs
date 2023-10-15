@@ -1,13 +1,26 @@
 use crate::tle::structure;
-use sgp4;
 use ureq;
 
 const TLE_URL_HOST: &'static str = "celestrak.org";
 const TLE_URL_ROUTE: &'static str = "/NORAD/elements";
 const TLE_URL_PARAMS: &'static str = "/gp.php?GROUP=stations";
 
-#[derive(Debug)]
-pub struct TleError;
+pub struct PredictionAtMinute {
+    pub satellite_name: String,
+    pub minute: f64,
+    pub prediction: sgp4::Prediction,
+}
+
+impl PredictionAtMinute {
+    pub fn new(satellite_name: &str, minute: f64, prediction: sgp4::Prediction) -> Self {
+        let satellite_name = satellite_name.to_owned();
+        return Self {
+            satellite_name,
+            minute,
+            prediction,
+        };
+    }
+}
 
 fn get_url() -> String {
     return format!(
@@ -16,12 +29,12 @@ fn get_url() -> String {
     );
 }
 
-fn fetch_tle_data(url: &str) -> Result<String, TleError> {
+fn fetch_tle_data(url: &str) -> Result<String, structure::TleError> {
     let data_from_tle_source = ureq::get(&url)
         .call()
-        .map_err(|_| TleError)?
+        .map_err(|_| structure::TleError)?
         .into_string()
-        .map_err(|_| TleError)?;
+        .map_err(|_| structure::TleError)?;
 
     return Ok(data_from_tle_source);
 }
@@ -39,9 +52,32 @@ fn parse_tle_data(raw_data: &str) -> Vec<structure::TLE> {
     return tles;
 }
 
-pub fn main() -> Vec<structure::TLE> {
+fn get_prediction(data: &structure::TLE) -> Vec<PredictionAtMinute> {
+    let elements = data.inner().inner();
+    let name = elements.object_name.as_ref().unwrap();
+    let constants = sgp4::Constants::from_elements(elements).unwrap();
+    let minutes_in_a_day = 24 * 60;
+    let minutes = 0..minutes_in_a_day;
+    let predictions_by_minute: Vec<PredictionAtMinute> = minutes
+        .map(|minute| {
+            let minute = minute as f64;
+            let prediction = constants.propagate(minute as f64).unwrap();
+            let prediction_at_minute = PredictionAtMinute::new(name, minute, prediction);
+            return prediction_at_minute;
+        })
+        .collect();
+
+    return predictions_by_minute;
+}
+
+pub fn get_daily_predictions() -> Vec<Vec<PredictionAtMinute>> {
     let url = get_url();
     let tle_source_data = fetch_tle_data(&url).unwrap();
     let tle_source_data_parsed = parse_tle_data(&tle_source_data);
-    return tle_source_data_parsed;
+    let full_day_predictions: Vec<Vec<PredictionAtMinute>> = tle_source_data_parsed
+        .iter()
+        .map(|tle| get_prediction(&tle))
+        .collect();
+
+    return full_day_predictions;
 }

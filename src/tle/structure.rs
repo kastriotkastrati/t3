@@ -26,6 +26,9 @@ impl TLEElements {
         return &self.0;
     }
 }
+
+#[derive(Debug)]
+pub struct TleError;
 pub struct TLE(TLEElements);
 
 impl Clone for TLEElements {

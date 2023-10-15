@@ -77,14 +77,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "flyer"
-version = "0.1.0"
-dependencies = [
- "sgp4",
- "ureq",
-]
-
-[[package]]
 name = "form_urlencoded"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -289,6 +281,14 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "t3"
+version = "0.1.0"
+dependencies = [
+ "sgp4",
+ "ureq",
 ]
 
 [[package]]

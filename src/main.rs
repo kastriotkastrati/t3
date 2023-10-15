@@ -4,5 +4,5 @@ mod tle {
 }
 
 fn main() {
-    tle::main::main();
+    tle::main::get_daily_predictions();
 }
