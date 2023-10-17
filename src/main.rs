@@ -1,8 +1,12 @@
 mod tle {
-    pub mod main;
+    pub mod get_data;
     pub mod structure;
 }
 
+mod calculate {
+    pub mod main;
+}
+
 fn main() {
-    tle::main::get_daily_predictions();
+    calculate::main::main();
 }
