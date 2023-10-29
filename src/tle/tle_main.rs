@@ -1,9 +1,9 @@
 use crate::tle::structure;
 use ureq;
 
-const TLE_URL_HOST: &'static str = "celestrak.org";
-const TLE_URL_ROUTE: &'static str = "/NORAD/elements";
-const TLE_URL_PARAMS: &'static str = "/gp.php?GROUP=stations";
+const TLE_URL_HOST: &str = "celestrak.org";
+const TLE_URL_ROUTE: &str = "/NORAD/elements";
+const TLE_URL_PARAMS: &str = "/gp.php?GROUP=stations";
 
 pub struct PredictionAtMinute {
     pub satellite_name: String,
@@ -30,7 +30,7 @@ fn get_url() -> String {
 }
 
 fn fetch_tle_data(url: &str) -> Result<String, structure::TleError> {
-    let data_from_tle_source = ureq::get(&url)
+    let data_from_tle_source = ureq::get(url)
         .call()
         .map_err(|_| structure::TleError)?
         .into_string()
@@ -61,7 +61,7 @@ fn get_prediction(data: &structure::TLE) -> Vec<PredictionAtMinute> {
     let predictions_by_minute: Vec<PredictionAtMinute> = minutes
         .map(|minute| {
             let minute = minute as f64;
-            let prediction = constants.propagate(minute as f64).unwrap();
+            let prediction = constants.propagate(minute).unwrap();
             let prediction_at_minute = PredictionAtMinute::new(name, minute, prediction);
             return prediction_at_minute;
         })
@@ -70,13 +70,13 @@ fn get_prediction(data: &structure::TLE) -> Vec<PredictionAtMinute> {
     return predictions_by_minute;
 }
 
-pub fn get_daily_predictions() -> Vec<Vec<PredictionAtMinute>> {
+pub fn get_daily_predictions() -> Vec<PredictionAtMinute> {
     let url = get_url();
     let tle_source_data = fetch_tle_data(&url).unwrap();
     let tle_source_data_parsed = parse_tle_data(&tle_source_data);
-    let full_day_predictions: Vec<Vec<PredictionAtMinute>> = tle_source_data_parsed
+    let full_day_predictions: Vec<PredictionAtMinute> = tle_source_data_parsed
         .iter()
-        .map(|tle| get_prediction(&tle))
+        .flat_map(get_prediction)
         .collect();
 
     return full_day_predictions;
