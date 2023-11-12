@@ -40,8 +40,8 @@ fn fetch_tle_data(url: &str) -> Result<String, structure::TleError> {
 }
 
 fn parse_tle_data(raw_data: &str) -> Vec<structure::TLE> {
-    let idk = sgp4::parse_3les(raw_data).unwrap();
-    let tles: Vec<structure::TLE> = idk
+    let elements = sgp4::parse_3les(raw_data).unwrap();
+    let tles: Vec<structure::TLE> = elements
         .into_iter()
         .map(|x| {
             let tle = structure::TLE::new(x);

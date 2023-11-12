@@ -307,6 +307,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "daemonize"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ab8bfdaacb3c887a54d41bdf48d3af8873b3f5566469f8ba21b92057509f116e"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "deranged"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1142,6 +1151,7 @@ dependencies = [
 name = "t3"
 version = "0.1.0"
 dependencies = [
+ "daemonize",
  "notify-rust",
  "serde_json",
  "sgp4",

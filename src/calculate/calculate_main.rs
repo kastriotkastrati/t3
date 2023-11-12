@@ -184,27 +184,28 @@ pub fn calculate_overhead_satellites() -> Vec<(f64, String, f64, units::Degrees,
         .degrees_to_radian()
         .unwrap();
 
-    let closest_distances: Vec<(f64, String, f64, units::Degrees, units::Degrees)> = data
-        .into_iter()
-        .map(|prediction_at_minute| {
-            let position = prediction_at_minute.prediction.position;
-            let position = CartesianCoordinates::new(position);
-            let position = position.from_km_to_m().unwrap();
-            let geodetic_data = BowringsMethod::to_geodetic(&position);
-            return (prediction_at_minute, geodetic_data);
-        })
-        .map(|(prediction, geodetic_data)| {
-            let satellite_latitude_radians = geodetic_data.latitude.as_radians();
-            let satellite_longitude_radians = geodetic_data.longitude.as_radians();
-            let distance = haversine_great_distance(
-                &user_latitude_radian,
-                &user_longitude_radian,
-                &satellite_latitude_radians,
-                &satellite_longitude_radians,
-            );
-            return (prediction, geodetic_data, distance);
-        })
-        .filter_map(|(prediction, geodetic_data, distance)| {
+    let closest_distances = data.into_iter().map(|prediction_at_minute| {
+        let position = prediction_at_minute.prediction.position;
+        let position = CartesianCoordinates::new(position);
+        let position = position.from_km_to_m().unwrap();
+        let geodetic_data = BowringsMethod::to_geodetic(&position);
+        return (prediction_at_minute, geodetic_data);
+    });
+
+    let closest_distances = closest_distances.map(|(prediction, geodetic_data)| {
+        let satellite_latitude_radians = geodetic_data.latitude.as_radians();
+        let satellite_longitude_radians = geodetic_data.longitude.as_radians();
+        let distance = haversine_great_distance(
+            &user_latitude_radian,
+            &user_longitude_radian,
+            &satellite_latitude_radians,
+            &satellite_longitude_radians,
+        );
+        return (prediction, geodetic_data, distance);
+    });
+
+    let closest_distances =
+        closest_distances.filter_map(|(prediction, geodetic_data, distance)| {
             let elevation = elevation_angle(
                 units::Radians(distance),
                 units::Radians(geodetic_data.altitude),
@@ -226,9 +227,10 @@ pub fn calculate_overhead_satellites() -> Vec<(f64, String, f64, units::Degrees,
                 geodetic_data.longitude.as_degrees(),
             );
             return Some(data);
-        })
-        .collect();
+        });
 
-    let first = closest_distances.first();
+    let closest_distances: Vec<(f64, String, f64, units::Degrees, units::Degrees)> =
+        closest_distances.collect();
+
     return closest_distances;
 }
