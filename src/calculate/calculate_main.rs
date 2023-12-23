@@ -169,8 +169,8 @@ fn elevation_angle(
         return units::Degrees(0.0);
     };
 
-    let angle_radians = x / satellite_altitude.m().inner();
-    let angle = angle_radians.atan().to_degrees();
+    let tangent_of_elevation = satellite_altitude.m().inner() / x;
+    let angle = tangent_of_elevation.atan().to_degrees();
     return units::Degrees(angle);
 }
 
