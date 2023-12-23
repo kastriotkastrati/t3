@@ -25,6 +25,6 @@ mod notifier {
 mod units;
 
 fn main() {
-    calculate::calculate_main::calculate_overhead_satellites();
-    notifier::notifier_main::notify();
+    let _ = calculate::calculate_main::calculate_overhead_satellites();
+    // notifier::notifier_main::notify();
 }

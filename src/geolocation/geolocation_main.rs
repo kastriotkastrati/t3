@@ -8,7 +8,7 @@ const LOCATION_URI: &str = "http://ip-api.com/json";
 
 pub struct Ip(String);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Location {
     pub latitude: units::AngleUnit,
     pub longitude: units::AngleUnit,

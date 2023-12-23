@@ -3,19 +3,42 @@ pub trait Inner {
     fn inner(&self) -> Self::InnerType;
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum LengthUnit {
-    Km,
-    M,
+    Km(f64),
+    M(f64),
 }
 
-#[derive(Debug)]
+impl LengthUnit {
+    pub fn inner(&self) -> f64 {
+        return match self {
+            Self::Km(km) => km.clone(),
+            Self::M(m) => m.clone(),
+        };
+    }
+
+    pub fn km(&self) -> Self {
+        return match self {
+            Self::Km(km) => Self::Km(km.clone()),
+            Self::M(m) => Self::Km(m / 1000.0),
+        };
+    }
+
+    pub fn m(&self) -> Self {
+        return match self {
+            Self::Km(km) => Self::M(km * 1000.0),
+            Self::M(m) => Self::M(m.clone()),
+        };
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Degrees(pub f64);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Radians(pub f64);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AngleUnit {
     Degrees(Degrees),
     Radians(Radians),
