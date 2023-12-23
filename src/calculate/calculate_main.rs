@@ -92,9 +92,9 @@ impl CartesianToGeodetic for BowringsMethod {
         let flattening = flattening();
         let earth_radius = earth_radius().m().inner();
         let e2 = get_eccentricity_squared();
-        let coordinate_x = cartesian_coordinates.x.inner();
-        let coordinate_y = cartesian_coordinates.y.inner();
-        let coordinate_z = cartesian_coordinates.z.inner();
+        let coordinate_x = cartesian_coordinates.x.m().inner();
+        let coordinate_y = cartesian_coordinates.y.m().inner();
+        let coordinate_z = cartesian_coordinates.z.m().inner();
         let distance_from_z_axis = {
             let x = coordinate_x.powi(2);
             let y = coordinate_y.powi(2);
